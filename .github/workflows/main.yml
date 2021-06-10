@@ -41,18 +41,15 @@ jobs:
         
       - name: Activate Virtual env
         run: venv/bin/activate 
-        
-      - name: pip freeze
-        run: pip freeze > requirements.txt
 
       # Install all the app dependencies
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip freeze > requirements.txt
 
 
       # Build the app and run tests
       - name: Build and Run Test
-        run: . venv/Scripts/activate 
+        run: . venv/bin/activate 
 
       - name: Create Zipfile archive of Dependencies
         run: |
