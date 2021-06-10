@@ -36,8 +36,11 @@ jobs:
       - name: Install Python Virtual ENV
         run: pip install virtualenv
 
-      - name: Activate and Install Depencies into Virtual env
-        run: python -m venv venv && venv/Scripts/activate 
+      - name: Install Depencies into Virtual env
+        run: python -m venv venv  
+        
+      - name: Activate Virtual env
+        run: venv/bin/activate 
 
       # Install all the app dependencies
       - name: Install dependencies
