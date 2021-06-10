@@ -36,11 +36,14 @@ jobs:
       - name: Install Python Virtual ENV
         run: pip install virtualenv
 
-      - name: Install Depencies into Virtual env
+      - name: Install Dependencies into Virtual env
         run: python -m venv venv  
         
       - name: Activate Virtual env
         run: venv/bin/activate 
+        
+      - name: pip freeze
+        run: pip freeze > requirements.txt
 
       # Install all the app dependencies
       - name: Install dependencies
