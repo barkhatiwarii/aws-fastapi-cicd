@@ -54,16 +54,16 @@ jobs:
       - name: Create Zipfile archive of Dependencies
         run: |
           cd ./venv/lib/python3.7/site-packages
-          zip -r9 ../../../../api.zip .
+          zip -r9 ../../../../main.zip .
 
       - name: Add App to Zipfile
-        run: zip -g ../api.zip -r .
+        run: zip -g ../main.zip -r .
 
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
         with:
-          name: api
-          path: api.zip     
+          name: main
+          path: main.zip     
           
 
   continuous-deployment:
@@ -81,20 +81,20 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: Download Lambda api.zip
+      - name: Download Lambda main.zip
         uses: actions/download-artifact@v2
         with:
-          name: api
+          name: main
 
       - name: Upload to S3
-        run: aws s3 cp api.zip s3://fastapi-cicd/api.zip
+        run: aws s3 cp main.zip s3://fastapi-cicd/main.zip
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Deploy new Lambda
-        run: aws lambda update-function-code --function-name fastapi-cicd --s3-bucket fastapi-cicd --s3-key api.zip
+        run: aws lambda update-function-code --function-name fastapi-cicd --s3-bucket fastapi-cicd --s3-key main.zip
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
