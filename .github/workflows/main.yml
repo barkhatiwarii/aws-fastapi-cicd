@@ -48,7 +48,7 @@ jobs:
       - name: Create Zipfile archive of Dependencies
         run: |
           cd ./venv/lib/python3.7/site-packages
-          zip -r9 ../main.zip .
+          zip -r9 main.zip .
 
       - name: Add App to Zipfile
         run: zip -g main.zip -r .
