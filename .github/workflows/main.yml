@@ -51,7 +51,7 @@ jobs:
           zip -r9 main.zip .
 
       - name: Add App to Zipfile
-        run: zip -g main.zip -r .
+        run: zip -g ../main.zip -r .
 
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
