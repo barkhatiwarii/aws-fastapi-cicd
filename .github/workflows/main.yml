@@ -42,10 +42,7 @@ jobs:
       - name: Activate Virtual env
         run: venv/bin/activate 
 
-      # Install all the app dependencies
-      - name: Install dependencies
-        run: pip freeze > requirements.txt
-        
+      # Install all the app dependencies  
       - name: Install dependencies
         run: pip install -r requirements.txt
 
