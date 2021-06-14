@@ -1,29 +1,16 @@
-# This is a basic workflow to help you get started with Actions
+name: CI/CD Pipeline
 
-name: CICD pipeline
-
-# Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+
   continuous-integration:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
       - uses: actions/checkout@v2
 
       - name: Set up Python all python version
@@ -33,32 +20,46 @@ jobs:
           architecture: x64
 
       - name: Install Python Virtual ENV
-        run: pip install virtualenv
+        run: pip3 install virtualenv
 
-      - name: Install Dependencies into Virtual env
-        run: python -m venv venv  
-        
-      - name: Activate Virtual env
-        run: venv/bin/activate 
+      - name:  Setup Virtual env
+        uses: actions/cache@v2
+        id: cache-venv
+        with:
+          path: venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
 
-      # Install all the app dependencies  
+      - name: Activate and Install Depencies into Virtual env
+        run: python -m venv venv && source venv/bin/activate &&
+          pip3 install -r requirements.txt
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+
+
+      # Install all the app dependencies
       - name: Install dependencies
-        run: pip freeze > requirements.txt && pip install -r requirements.txt
-      
+        run: pip3 install -r requirements.txt
+
+
+      # Build the app and run tests
+      - name: Build and Run Test
+        run: . venv/bin/activate 
+
       - name: Create Zipfile archive of Dependencies
         run: |
           cd ./venv/lib/python3.7/site-packages
-          zip -r9 ../main.zip .
+          zip -r9 ../../../../api.zip .
 
       - name: Add App to Zipfile
-        run: cd ./app && zip -g ../main.zip -r ./*
+        run: cd ./app && zip -g ../api.zip -r .
 
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
         with:
-          name: main
-          path: main.zip     
-          
+          name: api
+          path: api.zip
+
 
   continuous-deployment:
     runs-on: ubuntu-latest
@@ -75,20 +76,20 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: Download Lambda main.zip
+      - name: Download Lambda api.zip
         uses: actions/download-artifact@v2
         with:
-          name: main
+          name: api
 
       - name: Upload to S3
-        run: aws s3 cp main.zip s3://fastapi-cicd/main.zip
+        run: aws s3 cp api.zip s3://fastapi-ada/api.zip
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Deploy new Lambda
-        run: aws lambda update-function-code --function-name fastapi-cicd --s3-bucket fastapi-cicd --s3-key main.zip
+        run: aws lambda update-function-code --function-name testfunction --s3-bucket fastapi-ada --s3-key api.zip
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
