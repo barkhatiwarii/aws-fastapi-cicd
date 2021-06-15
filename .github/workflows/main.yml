@@ -33,7 +33,7 @@ jobs:
           architecture: x64
 
        - name: Install Python Virtual ENV
-        run: pip3 install virtualenv
+        run: pip install virtualenv
 
       
       - name: Activate and Install Depencies into Virtual env
