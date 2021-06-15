@@ -44,7 +44,7 @@ jobs:
 
       # Install all the app dependencies  
       - name: Install dependencies
-        run: pip freeze > requirements.txt && pip install -r requirements.txt
+        run: pip install -r requirements.txt
       
       - name: Create Zipfile archive of Dependencies
         run: |
