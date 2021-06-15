@@ -1,4 +1,4 @@
-"""from fastapi import FastAPI
+from fastapi import FastAPI
 from mangum import Mangum
 import json
 from api.v1.api import router as api_router
@@ -8,8 +8,7 @@ app = FastAPI(title='Serverless Lambda FastAPI')
 #app.include_router(api_router, prefix="/api/v1")
 
 
-#@app.get("/",  tags=["Endpoint Test"])
-@app.get("/")
+@app.get("/",  tags=["Endpoint Test"])
 def main_endpoint_test():
     return {"message": "Welcome CI/CD Pipeline with GitHub Actions!"}
 
@@ -29,23 +28,3 @@ def handler(event, context):
             "body": json.dumps("hello")
             }
 
-"""
-
-from fastapi import FastAPI
-from mangum import Mangum
-
-app = FastAPI()
-
-@app.get("/")
-def root():
-    return {"message": "Hello World"}
-
-
-
-def handler(event, context):
-    event['requestContext'] = {}  # Adds a dummy field; mangum will process this fine
-    
-    asgi_handler = Mangum(app)
-    response = asgi_handler(event, context)
-
-    return response
