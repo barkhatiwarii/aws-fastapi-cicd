@@ -21,8 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+  steps:
       - uses: actions/checkout@v2
 
       - name: Set up Python all python version
@@ -34,25 +33,35 @@ jobs:
       - name: Install Python Virtual ENV
         run: pip3 install virtualenv
 
-      - name: Install Dependencies into Virtual env
-        run: python -m venv venv  
-        
-      - name: Activate Virtual env
-        run: source venv/bin/activate 
+      - name:  Setup Virtual env
+        uses: actions/cache@v2
+        id: cache-venv
+        with:
+          path: venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
 
-      # Install all the app dependencies  
+      - name: Activate and Install Depencies into Virtual env
+        run: python -m venv venv && source venv/bin/activate &&
+          pip3 install -r requirements.txt
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+
+
+      # Install all the app dependencies
       - name: Install dependencies
         run: pip3 install -r requirements.txt
-      
-         # Build the app and run tests
+
+
+      # Build the app and run tests
       - name: Build and Run Test
-        run: . venv/bin/activate 
+        run: . venv/bin/activate && pytest
 
       - name: Create Zipfile archive of Dependencies
         run: |
           cd ./venv/lib/python3.7/site-packages
           zip -r9 ../../../../api.zip .
-
+								
       - name: Add App to Zipfile
         run: cd ./app && zip -g ../api.zip -r .
 
@@ -60,7 +69,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: api
-          path: api.zip     
+          path: api.zip
           
 
   continuous-deployment:
