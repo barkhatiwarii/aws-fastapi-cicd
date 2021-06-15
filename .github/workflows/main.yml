@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
-  steps:
+    steps:
       - uses: actions/checkout@v2
 
       - name: Set up Python all python version
@@ -55,13 +55,12 @@ jobs:
 
       # Build the app and run tests
       - name: Build and Run Test
-        run: . venv/bin/activate && pytest
+        run: . venv/bin/activate
 
       - name: Create Zipfile archive of Dependencies
         run: |
           cd ./venv/lib/python3.7/site-packages
-          zip -r9 ../../../../api.zip .
-								
+          zip -r9 ../../../../api.zip .					
       - name: Add App to Zipfile
         run: cd ./app && zip -g ../api.zip -r .
 
