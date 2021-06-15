@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+"""from fastapi import FastAPI
 from mangum import Mangum
 import json
 from api.v1.api import router as api_router
@@ -29,3 +29,15 @@ def handler(event, context):
             "body": json.dumps("hello")
             }
 
+"""
+
+from fastapi import FastAPI
+from mangum import Mangum
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"message": "Hello World"}
+
+handler = Mangum(app=app)
