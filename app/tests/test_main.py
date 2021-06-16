@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from mainap import app
+from main import app
 from fastapi import FastAPI
 from mangum import Mangum
 
