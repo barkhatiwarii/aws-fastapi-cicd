@@ -4,7 +4,6 @@ from pymongo import MongoClient
 from pydantic import BaseModel
 from typing import List
 import urllib.parse
-import dns
 import json
 from api.v1.api import router as api_router
 password="root123"
@@ -14,8 +13,6 @@ client = MongoClient(
 )
 db = client.get_database('myFirstDatabase')
 
-
-#my_database = myclient["GFG"]  
 
 app = FastAPI()
 
