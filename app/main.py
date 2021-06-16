@@ -33,19 +33,29 @@ def main_endpoint_test():
     return {"message": "Welcome CI/CD Pipeline with GitHub Actions!"}
 
 def handler(event, context):
-    event['requestContext'] = {}  # Adds a dummy field; mangum will process this fine
-    
+    event['requestContext'] = {}  # Adds a dummy field; mangum will process this fine  
     asgi_handler = Mangum(app)
     response = asgi_handler(event, context)
     json_data = event["queryStringParameters"] 
     # user = json_data["user"]
     return response
 
+# adding user
 @app.post("/user", status_code=status.HTTP_201_CREATED)
 def post_message(user: User):
-        msg_collection = db["users"] 
-        # msg_collection = client[DB][COLLECTION]
-        print(msg_collection)
-        result = msg_collection.insert_one(user.dict())
+        collection = db["users"] 
+        print(collection)
+        result = collection.insert_one(user.dict())
         print(result)
         return {"message":"Data inserted successfully"}
+
+# getting all users
+@app.get("/user", response_model=List[User])
+def get_users():
+        collection = db["users"] 
+        user_list = collection.find()
+        users=[]
+        for i in user_list:
+            users.append(User(**i))
+        print(users)
+        return users
