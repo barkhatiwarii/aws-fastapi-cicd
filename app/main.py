@@ -41,7 +41,7 @@ def handler(event, context):
     # user = json_data["user"]
     return response
 
-@app.post("/user", status_code=status.HTTP_201_CREATED)
+@app.post("/", status_code=status.HTTP_201_CREATED)
 def post_message(user: User):
         msg_collection = db["users"] 
         # msg_collection = client[DB][COLLECTION]
