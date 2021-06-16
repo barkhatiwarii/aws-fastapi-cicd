@@ -51,6 +51,4 @@ def post_message(user: User):
         print(msg_collection)
         result = msg_collection.insert_one(user.dict())
         print(result)
-        return {"mgs":"ada"}
-        ack = result.acknowledged
-        return {"insertion": ack}
+        return {"message":"Data inserted successfully"}
