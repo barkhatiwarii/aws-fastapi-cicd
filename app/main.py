@@ -3,6 +3,7 @@ from mangum import Mangum
 from pymongo import MongoClient
 from pydantic import BaseModel
 from typing import List
+from bson.objectid import ObjectId
 import urllib.parse
 import json
 from api.v1.api import router as api_router
@@ -36,18 +37,16 @@ def handler(event, context):
     event['requestContext'] = {}  # Adds a dummy field; mangum will process this fine  
     asgi_handler = Mangum(app)
     response = asgi_handler(event, context)
-    json_data = event["queryStringParameters"] 
-    # user = json_data["user"]
     return response
 
 # adding user
 @app.post("/user", status_code=status.HTTP_201_CREATED)
-def post_message(user: User):
+def post_user(user: User):
         collection = db["users"] 
         print(collection)
         result = collection.insert_one(user.dict())
         print(result)
-        return {"message":"Data inserted successfully"}
+        return {"message":"Data inserted successfully!!"}
 
 # getting all users
 @app.get("/user", response_model=List[User])
@@ -59,3 +58,32 @@ def get_users():
             users.append(User(**i))
         print(users)
         return users
+
+# updating user
+@app.put("/user/{id}", status_code=status.HTTP_201_CREATED)
+def update_user(id, user: User):
+        collection = db["users"] 
+        user_id=ObjectId(id)
+        result = collection.update_one({"_id":user_id}, {"$set": dict(user)})
+        print(result)
+        return {"message":"User Data updated successfully!!"}
+
+# deleting user
+@app.delete("/user/{id}", status_code=status.HTTP_201_CREATED)
+def delete_user(id):
+        collection = db["users"] 
+        user_id=ObjectId(id)
+        result = collection.delete_one({"_id":user_id})
+        print(result)
+        return {"message":"User deleted successfully!!"}
+
+
+# getting single user by id
+@app.get("/user/{id}", response_model=List[User])
+def get_users(id):
+        collection = db["users"] 
+        user_id=ObjectId(id)
+        user = collection.find_one({"_id":user_id})
+        print(user)
+        return [user]
+        
